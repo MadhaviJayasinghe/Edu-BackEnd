@@ -144,10 +144,12 @@ app.post("/api/newQuestAttempt/", (req, res, next) => {
         quest: req.body.quest,
         answer: req.body.answer,
         attempt: req.body.attempt,
-        marks: 0
+        marks: null,
+        questionId: req.body.questionId
     }
-    var sql ='INSERT INTO marks (quest, answer, attempt, marks) VALUES (?,?,?,?)'
-    var params =[data.quest, data.answer, data.attempt]
+    console.log(data)
+    var sql ='INSERT INTO marks (quest, answer, attempt, marks, questionId) VALUES (?,?,?,?,?)'
+    var params =[data.quest, data.answer, data.attempt, data.marks, data.questionId]
     db.run(sql, params, function (err, result) {
         if (err){
             console.log(err)
@@ -166,13 +168,14 @@ app.put("/api/updateMarksInAttempt/:attempt/:id", (req, res, next) => {
     var data = {
         marks: req.body.marks
     }
-    var sql = "UPDATE marks set marks = ? WHERE attempt = ? and quest = ?"
+        
+    var sql = "UPDATE marks set marks = ? WHERE attempt = ? and questionId = ?"
     var params = [data.marks, req.params.attempt, req.params.id]
-    console.log(req.params.id)
+
     // db.run(
     //     `UPDATE marks set 
     //        marks = ?
-    //        WHERE attempt = ? and id = ?`,
+    //        WHERE attempt = ? and questionId = ?`,
     //     [data.marks, req.params.attempt, req.params.id],
     //     function (err, result) {
     //         if (err){
@@ -345,7 +348,22 @@ app.delete("/api/subject/:id", (req, res, next) => {
     });
 })
 
-
+app.get("/api/getSum/:attempt", (req, res, next) => {
+    var sql = "select sum(marks.marks) as marks from marks where marks.attempt = ?"
+    var params = [req.params.attempt]
+    console.log('qqq'+req.params.attempt)
+    db.all(sql, params, (err, rows) => {
+        console.log(rows)
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        res.json({
+            message:"success",
+            data: rows
+        })
+      });
+});
 
 // Default response for any other request
 app.use(function(req, res){

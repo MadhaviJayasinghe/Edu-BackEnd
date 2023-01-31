@@ -61,15 +61,16 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             quest INTEGER, 
             answer text,
             marks INTEGER,
-            attempt INTEGER
+            attempt INTEGER,
+            questionId INTEGER
             )`,
         (err) => {
             if (err) {
                 // Table already created
             }else{
                 // Table just created, creating some rows (no rows up to now) 
-                var insert = 'INSERT INTO marks (quest, answer, marks, attempt) VALUES (?,?,?,?)'
-                db.run(insert, [1,"Test Answer", 0, 1])               
+                var insert = 'INSERT INTO marks (quest, answer, marks, attempt, questionId) VALUES (?,?,?,?,?)'
+                db.run(insert, [1,"Test Answer", 0, 1,1])               
             }
         }); 
 
